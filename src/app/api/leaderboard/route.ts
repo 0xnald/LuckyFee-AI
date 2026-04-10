@@ -5,7 +5,7 @@ export async function GET() {
   try {
     const db = await getDb();
 
-    const topEntries = await db.collection('entries').aggregate([
+    const topEntries = await db.collection('pool_entries').aggregate([
       { $group: { _id: '$wallet', entries: { $sum: 1 }, totalVolume: { $sum: '$amount' } } },
       { $sort: { entries: -1 } },
       { $limit: 20 },
@@ -19,15 +19,15 @@ export async function GET() {
       { $project: { wallet: '$_id', wins: 1, totalWon: 1, _id: 0 } },
     ]).toArray();
 
-    const topVolume = await db.collection('entries').aggregate([
+    const topVolume = await db.collection('pool_entries').aggregate([
       { $group: { _id: '$wallet', totalVolume: { $sum: '$amount' }, entries: { $sum: 1 } } },
       { $sort: { totalVolume: -1 } },
       { $limit: 20 },
       { $project: { wallet: '$_id', totalVolume: 1, entries: 1, _id: 0 } },
     ]).toArray();
 
-    const totalPlayers = await db.collection('entries').distinct('wallet');
-    const totalEntries = await db.collection('entries').countDocuments();
+    const totalPlayers = await db.collection('pool_entries').distinct('wallet');
+    const totalEntries = await db.collection('pool_entries').countDocuments();
     const totalDraws = await db.collection('draws').countDocuments();
 
     return NextResponse.json({

@@ -178,7 +178,7 @@ export async function POST(req: NextRequest) {
     const existing = await db.collection('pool_entries').findOne({ wallet, tier, createdAt: { $gte: roundStart } });
     if (existing) return NextResponse.json({ success: false, error: 'Already in this round' }, { status: 400 });
 
-    await db.collection('pool_entries').insertOne({ wallet, txSignature, tier, createdAt: new Date() });
+    await db.collection('pool_entries').insertOne({ wallet, txSignature, tier, amount: tier, createdAt: new Date() });
 
     return NextResponse.json({ success: true });
   } catch (err) {
